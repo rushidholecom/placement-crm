@@ -230,8 +230,8 @@ export async function globalSearch(query: string): Promise<GlobalSearchResponse>
       email: primaryHr?.email ?? null,
       remark: primaryHr?.remark ?? vacancy.company.notes,
       nextFollowUp: toIsoDate(followUp?.dueAt),
-      href: `/dashboard/companies/${vacancy.company.id}`,
-      editHref: `/dashboard/companies/${vacancy.company.id}/edit`
+      href: `/dashboard/vacancies/${vacancy.id}`,
+      editHref: `/dashboard/vacancies/${vacancy.id}/edit`
     };
   });
 

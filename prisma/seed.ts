@@ -5,7 +5,9 @@ import {
   FollowUpType,
   HrPriority,
   HrStatus,
-  PrismaClient
+  PrismaClient,
+  VacancyPriority,
+  VacancyStatus
 } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -199,56 +201,86 @@ async function main() {
       {
         companyId: companies[0].id,
         title: "Software Engineer Intern",
+        experience: "0-1 years",
         openings: 8,
         location: "Bengaluru",
         technology: "React, Node.js, TypeScript",
         skills: "Frontend, REST APIs, SQL, problem solving",
-        compensationLpa: 12
+        compensationLpa: 12,
+        priority: VacancyPriority.HIGH,
+        status: VacancyStatus.OPEN,
+        assignedRecruiterId: hrContacts[0].id,
+        remark: "High-volume campus role."
       },
       {
         companyId: companies[0].id,
         title: "Associate Product Analyst",
+        experience: "0-2 years",
         openings: 3,
         location: "Remote",
         technology: "SQL, Tableau, Excel",
         skills: "Analytics, dashboards, stakeholder communication",
-        compensationLpa: 10
+        compensationLpa: 10,
+        priority: VacancyPriority.MEDIUM,
+        status: VacancyStatus.IN_PROGRESS,
+        assignedRecruiterId: hrContacts[0].id,
+        remark: "Needs analytics screening round."
       },
       {
         companyId: companies[1].id,
         title: "Embedded Systems Engineer",
+        experience: "1-3 years",
         openings: 5,
         location: "Pune",
         technology: "C, C++, CAN, RTOS",
         skills: "Embedded development, debugging, hardware interfaces",
-        compensationLpa: 9.5
+        compensationLpa: 9.5,
+        priority: VacancyPriority.URGENT,
+        status: VacancyStatus.OPEN,
+        assignedRecruiterId: hrContacts[1].id,
+        remark: "Drive date pending approval."
       },
       {
         companyId: companies[2].id,
         title: "Data Analyst",
+        experience: "0-2 years",
         openings: 4,
         location: "Mumbai",
         technology: "Python, SQL, Power BI",
         skills: "Data cleaning, reporting, business analysis",
-        compensationLpa: 11
+        compensationLpa: 11,
+        priority: VacancyPriority.HIGH,
+        status: VacancyStatus.OPEN,
+        assignedRecruiterId: hrContacts[2].id,
+        remark: "Shortlist data portfolio candidates."
       },
       {
         companyId: companies[3].id,
         title: "Implementation Associate",
+        experience: "0-1 years",
         openings: 6,
         location: "Hyderabad",
         technology: "SaaS, CRM, APIs",
         skills: "Client onboarding, documentation, support",
-        compensationLpa: 8
+        compensationLpa: 8,
+        priority: VacancyPriority.LOW,
+        status: VacancyStatus.ON_HOLD,
+        assignedRecruiterId: hrContacts[3].id,
+        remark: "Waiting for onboarding deck."
       },
       {
         companyId: companies[4].id,
         title: "Cloud Support Engineer",
+        experience: "1-2 years",
         openings: 7,
         location: "Gurugram",
         technology: "AWS, Linux, Docker",
         skills: "Cloud support, incident response, scripting",
-        compensationLpa: 10.5
+        compensationLpa: 10.5,
+        priority: VacancyPriority.MEDIUM,
+        status: VacancyStatus.OPEN,
+        assignedRecruiterId: hrContacts[4].id,
+        remark: "Linux troubleshooting is mandatory."
       }
     ]
   });

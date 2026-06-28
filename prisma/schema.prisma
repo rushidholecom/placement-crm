@@ -56,6 +56,20 @@ enum HrStatus {
   INACTIVE
 }
 
+enum VacancyPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum VacancyStatus {
+  OPEN
+  IN_PROGRESS
+  ON_HOLD
+  CLOSED
+}
+
 model User {
   id            String    @id @default(cuid())
   username      String    @unique
@@ -123,6 +137,7 @@ model HrContact {
   company           Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
   followUps         FollowUp[]
   activities        Activity[]
+  assignedVacancies Vacancy[]
 
   @@index([companyId])
   @@index([city])
@@ -132,23 +147,32 @@ model HrContact {
 }
 
 model Vacancy {
-  id             String    @id @default(cuid())
-  companyId       String
-  title           String
-  openings        Int
-  location        String
-  technology      String?
-  skills          String?
-  compensationLpa Float
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  company         Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  id                  String          @id @default(cuid())
+  companyId           String
+  assignedRecruiterId String?
+  title               String
+  experience          String
+  openings            Int
+  location            String
+  technology          String?
+  skills              String?
+  compensationLpa     Float
+  priority            VacancyPriority @default(MEDIUM)
+  status              VacancyStatus   @default(OPEN)
+  remark              String?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  company             Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  assignedRecruiter   HrContact?      @relation(fields: [assignedRecruiterId], references: [id], onDelete: SetNull)
 
   @@index([companyId])
+  @@index([assignedRecruiterId])
   @@index([title])
   @@index([location])
   @@index([technology])
   @@index([skills])
+  @@index([priority])
+  @@index([status])
 }
 
 model FollowUp {

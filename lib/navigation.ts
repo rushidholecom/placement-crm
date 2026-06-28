@@ -1,6 +1,7 @@
 import {
   Building2,
   ChartNoAxesCombined,
+  BriefcaseBusiness,
   Settings,
   UserRoundCog,
   UsersRound
@@ -32,6 +33,12 @@ export const dashboardNavigation = [
     description: "Track recruiter contacts, duplicates, and follow-ups"
   },
   {
+    title: "Vacancies",
+    href: "/dashboard/vacancies",
+    icon: BriefcaseBusiness,
+    description: "Manage live roles, recruiters, and pipeline progress"
+  },
+  {
     title: "Settings",
     href: "/dashboard/settings",
     icon: Settings,
@@ -40,7 +47,9 @@ export const dashboardNavigation = [
 ] as const;
 
 export function getPageTitle(pathname: string) {
-  const matchedItem = dashboardNavigation.find((item) => item.href === pathname);
+  const matchedItem = dashboardNavigation.find(
+    (item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
+  );
 
   if (matchedItem) {
     return matchedItem.title;
