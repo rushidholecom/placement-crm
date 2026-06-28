@@ -8,6 +8,7 @@ import {
   Users
 } from "lucide-react";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
+import { ReminderCenter } from "@/components/dashboard/reminder-center";
 import { FollowUpList } from "@/components/dashboard/follow-up-list";
 import { LatestHrList } from "@/components/dashboard/latest-hr-list";
 import { StatCard } from "@/components/dashboard/stat-card";
@@ -16,6 +17,7 @@ import { ToastBridge } from "@/components/ui/toast-bridge";
 import { getDashboardData } from "@/lib/dashboard/queries";
 import { getCurrentSession } from "@/lib/auth/session";
 import { getToastFromSearchParams } from "@/lib/toast";
+import { getReminderDashboardData } from "@/lib/reminders/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +31,10 @@ export default async function DashboardPage({
   const session = await getCurrentSession();
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const toast = getToastFromSearchParams(resolvedSearchParams);
-  const dashboard = await getDashboardData();
+  const [dashboard, reminders] = await Promise.all([
+    getDashboardData(),
+    getReminderDashboardData()
+  ]);
 
   return (
     <div className="space-y-8">
@@ -87,6 +92,8 @@ export default async function DashboardPage({
           icon={BriefcaseBusiness}
         />
       </section>
+
+      <ReminderCenter data={reminders} />
 
       <section className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
         <ActivityFeed items={dashboard.recentActivities} />

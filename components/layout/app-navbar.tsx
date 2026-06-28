@@ -1,22 +1,26 @@
 import { BellDot, ShieldCheck } from "lucide-react";
 import { logoutAction } from "@/app/actions";
+import { NotificationBell } from "@/components/layout/notification-bell";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { GlobalSearch } from "@/components/search/global-search";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import type { ReminderOverview } from "@/lib/reminders/types";
 
 type AppNavbarProps = {
   fullName: string;
   role: string;
   username: string;
   pageTitle: string;
+  reminders: ReminderOverview;
 };
 
 export function AppNavbar({
   fullName,
   role,
   username,
-  pageTitle
+  pageTitle,
+  reminders
 }: AppNavbarProps) {
   return (
     <header className="sticky top-0 z-30 border-b border-border/60 bg-background/85 backdrop-blur">
@@ -33,6 +37,7 @@ export function AppNavbar({
         </div>
 
         <div className="flex flex-wrap items-center gap-3 lg:justify-end">
+          <NotificationBell data={reminders} />
           <Badge variant="outline" className="hidden gap-1.5 rounded-full px-3 py-1 sm:inline-flex">
             <BellDot className="h-3.5 w-3.5" />
             Internal tool

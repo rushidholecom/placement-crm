@@ -35,6 +35,7 @@ async function main() {
   });
 
   await prisma.activity.deleteMany();
+  await prisma.followUpReminder.deleteMany();
   await prisma.followUp.deleteMany();
   await prisma.vacancy.deleteMany();
   await prisma.hrContact.deleteMany();
@@ -351,6 +352,74 @@ async function main() {
         dueAt: new Date(now.getTime() - hour * 30)
       }
     ]
+  });
+
+  const followUps = await prisma.followUp.findMany({
+    where: {
+      subject: {
+        in: [
+          "Confirm assessment timeline",
+          "Share JD revision",
+          "Pending approval on campus drive date",
+          "Send candidate feedback summary",
+          "Reschedule compensation discussion"
+        ]
+      }
+    },
+    include: {
+      company: {
+        select: {
+          id: true,
+          name: true
+        }
+      },
+      hrContact: {
+        select: {
+          id: true,
+          fullName: true
+        }
+      }
+    }
+  });
+
+  const followUpBySubject = new Map(followUps.map((followUp) => [followUp.subject, followUp]));
+
+  const seedReminder = (subject: string, bucket: "TODAY" | "TOMORROW" | "OVERDUE" | "URGENT") => {
+    const followUp = followUpBySubject.get(subject);
+
+    if (!followUp) {
+      return null;
+    }
+
+    return {
+      followUpId: followUp.id,
+      companyId: followUp.companyId,
+      hrContactId: followUp.hrContactId,
+      bucket,
+      title: `${followUp.subject} reminder`,
+      description: `${followUp.subject} for ${followUp.company.name} is due on ${followUp.dueAt.toLocaleString("en-IN")}.`,
+      dueAt: followUp.dueAt,
+      scheduledFor: new Date(now.getFullYear(), now.getMonth(), now.getDate(), 10, 30, 0)
+    };
+  };
+
+  await prisma.followUpReminder.createMany({
+    data: [
+      seedReminder("Confirm assessment timeline", "URGENT"),
+      seedReminder("Share JD revision", "URGENT"),
+      seedReminder("Pending approval on campus drive date", "OVERDUE"),
+      seedReminder("Send candidate feedback summary", "OVERDUE"),
+      seedReminder("Reschedule compensation discussion", "TOMORROW")
+    ].filter(Boolean) as Array<{
+      followUpId: string;
+      companyId: string;
+      hrContactId: string | null;
+      bucket: "TODAY" | "TOMORROW" | "OVERDUE" | "URGENT";
+      title: string;
+      description: string;
+      dueAt: Date;
+      scheduledFor: Date;
+    }>
   });
 
   await prisma.activity.createMany({

@@ -6,6 +6,7 @@ import { AppNavbar } from "@/components/layout/app-navbar";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { getPageTitle } from "@/lib/navigation";
+import type { ReminderOverview } from "@/lib/reminders/types";
 
 type AppShellProps = {
   children: ReactNode;
@@ -15,9 +16,10 @@ type AppShellProps = {
     fullName: string;
     role: string;
   };
+  reminders: ReminderOverview;
 };
 
-export function AppShell({ children, user }: AppShellProps) {
+export function AppShell({ children, user, reminders }: AppShellProps) {
   const pathname = usePathname();
 
   return (
@@ -30,6 +32,7 @@ export function AppShell({ children, user }: AppShellProps) {
             role={user.role}
             username={user.username}
             pageTitle={getPageTitle(pathname)}
+            reminders={reminders}
           />
           <div className="px-4 py-4 lg:px-8">
             <MobileNav />

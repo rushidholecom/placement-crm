@@ -70,6 +70,19 @@ enum VacancyStatus {
   CLOSED
 }
 
+enum ReminderBucket {
+  TODAY
+  TOMORROW
+  OVERDUE
+  URGENT
+}
+
+enum ReminderStatus {
+  UNREAD
+  DONE
+  DISMISSED
+}
+
 model User {
   id            String    @id @default(cuid())
   username      String    @unique
@@ -110,6 +123,7 @@ model Company {
   vacancies    Vacancy[]
   followUps    FollowUp[]
   activities   Activity[]
+  reminders    FollowUpReminder[]
 
   @@unique([name, city])
   @@index([status])
@@ -137,6 +151,7 @@ model HrContact {
   company           Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
   followUps         FollowUp[]
   activities        Activity[]
+  reminders         FollowUpReminder[]
   assignedVacancies Vacancy[]
 
   @@index([companyId])
@@ -189,6 +204,7 @@ model FollowUp {
   updatedAt     DateTime       @updatedAt
   company       Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
   hrContact     HrContact?     @relation(fields: [hrContactId], references: [id], onDelete: SetNull)
+  reminder      FollowUpReminder?
 
   @@index([companyId])
   @@index([hrContactId])
@@ -210,4 +226,30 @@ model Activity {
   @@index([companyId])
   @@index([hrContactId])
   @@index([createdAt])
+}
+
+model FollowUpReminder {
+  id            String          @id @default(cuid())
+  followUpId    String          @unique
+  companyId     String
+  hrContactId   String?
+  bucket        ReminderBucket
+  title         String
+  description   String
+  dueAt         DateTime
+  scheduledFor   DateTime
+  status        ReminderStatus  @default(UNREAD)
+  doneAt        DateTime?
+  dismissedAt   DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  followUp      FollowUp        @relation(fields: [followUpId], references: [id], onDelete: Cascade)
+  company       Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  hrContact     HrContact?      @relation(fields: [hrContactId], references: [id], onDelete: SetNull)
+
+  @@index([companyId])
+  @@index([hrContactId])
+  @@index([bucket])
+  @@index([status])
+  @@index([scheduledFor])
 }
