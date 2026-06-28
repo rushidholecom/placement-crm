@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 44 100% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --primary: 221 39% 11%;
+    --primary-foreground: 44 100% 98%;
+    --secondary: 40 33% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 45 33% 94%;
+    --muted-foreground: 215 16% 42%;
+    --accent: 35 100% 96%;
+    --accent-foreground: 221 39% 11%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 35 20% 88%;
+    --input: 35 20% 88%;
+    --ring: 221 39% 11%;
+    --radius: 0.9rem;
+  }
+
+  .dark {
+    --background: 224 29% 10%;
+    --foreground: 40 33% 96%;
+    --card: 222 25% 14%;
+    --card-foreground: 40 33% 96%;
+    --primary: 38 92% 50%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 222 17% 20%;
+    --secondary-foreground: 40 33% 96%;
+    --muted: 223 15% 18%;
+    --muted-foreground: 215 20% 73%;
+    --accent: 222 17% 20%;
+    --accent-foreground: 40 33% 96%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 222 17% 22%;
+    --input: 222 17% 22%;
+    --ring: 38 92% 50%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased transition-colors duration-200;
+    font-family: "Aptos", "Segoe UI", "Helvetica Neue", sans-serif;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .bg-app-surface {
+    background-image:
+      radial-gradient(circle at top left, rgba(245, 158, 11, 0.12), transparent 24%),
+      radial-gradient(circle at bottom right, rgba(15, 23, 42, 0.1), transparent 28%),
+      linear-gradient(180deg, rgba(255, 251, 235, 0.65), rgba(255, 255, 255, 0));
+  }
+
+  .dark .bg-app-surface {
+    background-image:
+      radial-gradient(circle at top left, rgba(245, 158, 11, 0.16), transparent 22%),
+      radial-gradient(circle at bottom right, rgba(148, 163, 184, 0.14), transparent 30%),
+      linear-gradient(180deg, rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95));
+  }
+}
