@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import {
   ActivityType,
+  EmailSendStatus,
   FollowUpStatus,
   FollowUpType,
   HrPriority,
@@ -35,6 +36,9 @@ async function main() {
   });
 
   await prisma.activity.deleteMany();
+  await prisma.emailLog.deleteMany();
+  await prisma.emailTemplate.deleteMany();
+  await prisma.emailSettings.deleteMany();
   await prisma.followUpReminder.deleteMany();
   await prisma.followUp.deleteMany();
   await prisma.vacancy.deleteMany();
@@ -469,6 +473,94 @@ async function main() {
         description: "Compensation notes and internship batch capacity were revised.",
         type: ActivityType.NOTE,
         createdAt: new Date(now.getTime() - hour * 14)
+      }
+    ]
+  });
+
+  await prisma.emailSettings.create({
+    data: {
+      key: "default",
+      smtpHost: "smtp.example.com",
+      smtpPort: 465,
+      smtpSecure: true,
+      smtpUser: "mailer@example.com",
+      smtpPassword: "change-me",
+      fromName: "Placement CRM",
+      fromEmail: "noreply@example.com",
+      replyTo: "placements@example.com",
+      signature: "Regards,\nPlacement CRM"
+    }
+  });
+
+  await prisma.emailTemplate.createMany({
+    data: [
+      {
+        key: "INTRODUCTION",
+        label: "Introduction",
+        subject: "Introduction from {{senderName}}",
+        body:
+          "Hi {{recipientName}},\n\nI hope you are doing well. I am reaching out from Placement CRM to introduce our student pipeline and support for your hiring plans at {{companyName}}.\n\nIf you are open to it, I would love to schedule a short conversation to understand your current requirements and share the most relevant profiles.\n\n{{signature}}",
+        isDefault: true
+      },
+      {
+        key: "FOLLOW_UP",
+        label: "Follow-up",
+        subject: "Follow-up on our last conversation",
+        body:
+          "Hi {{recipientName}},\n\nI wanted to follow up on our previous discussion regarding {{companyName}}.\n\nPlease let me know if there are any updates from your side or if you would like me to share additional candidate details.\n\n{{signature}}",
+        isDefault: true
+      },
+      {
+        key: "REMINDER",
+        label: "Reminder",
+        subject: "Gentle reminder regarding the pending update",
+        body:
+          "Hi {{recipientName}},\n\nThis is a gentle reminder about the pending update we discussed for {{companyName}}.\n\nWhenever you have a moment, please share the next step so we can keep the process moving smoothly.\n\n{{signature}}",
+        isDefault: true
+      },
+      {
+        key: "CANDIDATE_SHARED",
+        label: "Candidate Shared",
+        subject: "Candidate profiles shared for review",
+        body:
+          "Hi {{recipientName}},\n\nThe candidate profiles for {{companyName}} have been shared for your review.\n\nPlease let me know if you would like us to arrange interviews, share more profiles, or clarify any requirement.\n\n{{signature}}",
+        isDefault: true
+      },
+      {
+        key: "THANK_YOU",
+        label: "Thank You",
+        subject: "Thank you for your time",
+        body:
+          "Hi {{recipientName}},\n\nThank you for taking the time to connect with us today.\n\nWe appreciate your support and look forward to continuing the conversation with {{companyName}}.\n\n{{signature}}",
+        isDefault: true
+      }
+    ]
+  });
+
+  await prisma.emailLog.createMany({
+    data: [
+      {
+        companyId: companies[0].id,
+        hrContactId: hrContacts[0].id,
+        templateKey: "INTRODUCTION",
+        recipientName: hrContacts[0].fullName,
+        recipientEmail: hrContacts[0].email,
+        subject: "Introduction from Placement CRM",
+        body:
+          "Hi Neha,\n\nI hope you are doing well. I am reaching out from Placement CRM to introduce our student pipeline and support for your hiring plans at Apex Talent Systems.\n\nIf you are open to it, I would love to schedule a short conversation to understand your current requirements and share the most relevant profiles.\n\nRegards,\nPlacement CRM",
+        status: EmailSendStatus.SUCCESS
+      },
+      {
+        companyId: companies[2].id,
+        hrContactId: hrContacts[2].id,
+        templateKey: "FOLLOW_UP",
+        recipientName: hrContacts[2].fullName,
+        recipientEmail: hrContacts[2].email,
+        subject: "Follow-up on our last conversation",
+        body:
+          "Hi Aisha,\n\nI wanted to follow up on our previous discussion regarding Bluefin Analytics.\n\nPlease let me know if there are any updates from your side or if you would like me to share additional candidate details.\n\nRegards,\nPlacement CRM",
+        status: EmailSendStatus.FAILED,
+        errorMessage: "SMTP relay rejected the message during seed load."
       }
     ]
   });

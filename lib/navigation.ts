@@ -2,6 +2,7 @@ import {
   Building2,
   ChartNoAxesCombined,
   BriefcaseBusiness,
+  Mail,
   Settings,
   UserRoundCog,
   UsersRound
@@ -37,6 +38,12 @@ export const dashboardNavigation = [
     href: "/dashboard/vacancies",
     icon: BriefcaseBusiness,
     description: "Manage live roles, recruiters, and pipeline progress"
+  },
+  {
+    title: "Email",
+    href: "/dashboard/email",
+    icon: Mail,
+    description: "Configure SMTP, edit templates, and send tracked emails"
   },
   {
     title: "Settings",

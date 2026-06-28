@@ -28,6 +28,11 @@ enum ActivityType {
   HR
 }
 
+enum EmailSendStatus {
+  SUCCESS
+  FAILED
+}
+
 enum CompanyStatus {
   ACTIVE
   PROSPECT
@@ -252,4 +257,52 @@ model FollowUpReminder {
   @@index([bucket])
   @@index([status])
   @@index([scheduledFor])
+}
+
+model EmailSettings {
+  key           String   @id
+  smtpHost      String
+  smtpPort      Int
+  smtpSecure    Boolean  @default(true)
+  smtpUser      String?
+  smtpPassword  String?
+  fromName      String
+  fromEmail     String
+  replyTo       String?
+  signature     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model EmailTemplate {
+  key         String   @id
+  label       String
+  subject     String
+  body        String
+  isDefault   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model EmailLog {
+  id            String          @id @default(cuid())
+  companyId     String?
+  hrContactId   String?
+  templateKey   String?
+  recipientName String?
+  recipientEmail String
+  cc            String?
+  bcc           String?
+  subject       String
+  body          String
+  status        EmailSendStatus
+  errorMessage  String?
+  createdAt     DateTime        @default(now())
+  company       Company?        @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  hrContact     HrContact?      @relation(fields: [hrContactId], references: [id], onDelete: SetNull)
+
+  @@index([companyId])
+  @@index([hrContactId])
+  @@index([status])
+  @@index([createdAt])
 }
