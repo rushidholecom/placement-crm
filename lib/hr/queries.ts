@@ -166,18 +166,18 @@ export async function getHrById(hrId: string) {
           id: true,
           name: true,
           industry: true,
-          city: true
+          city: true,
+          activities: {
+            orderBy: {
+              createdAt: "desc"
+            },
+            take: 20
+          }
         }
       },
       followUps: {
         orderBy: {
           dueAt: "desc"
-        },
-        take: 10
-      },
-      activities: {
-        orderBy: {
-          createdAt: "desc"
         },
         take: 10
       }

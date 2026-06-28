@@ -123,7 +123,31 @@ function getPrismaErrorMessage(error: unknown) {
   return "Unable to save the HR contact right now. Please try again.";
 }
 
-async function createFollowUpForHr({
+async function logHrActivity({
+  companyId,
+  hrContactId,
+  title,
+  description,
+  type
+}: {
+  companyId: string;
+  hrContactId: string;
+  title: string;
+  description: string;
+  type: ActivityType;
+}) {
+  await prisma.activity.create({
+    data: {
+      companyId,
+      hrContactId,
+      title,
+      description,
+      type
+    }
+  });
+}
+
+async function syncFollowUpForHr({
   companyId,
   hrContactId,
   fullName,
@@ -136,21 +160,69 @@ async function createFollowUpForHr({
   nextFollowUpDate: Date | null;
   remark: string | null;
 }) {
+  const templateSubject = `Follow up with ${fullName}`;
+  const templateNotes = remark || "Follow-up created from HR contact record.";
+
+  const existingFollowUp = await prisma.followUp.findFirst({
+    where: {
+      hrContactId,
+      status: FollowUpStatus.PENDING,
+      subject: {
+        startsWith: "Follow up with "
+      }
+    },
+    orderBy: {
+      createdAt: "desc"
+    }
+  });
+
   if (!nextFollowUpDate) {
-    return;
+    if (!existingFollowUp) {
+      return { action: null as const, followUp: null };
+    }
+
+    const cancelledFollowUp = await prisma.followUp.update({
+      where: { id: existingFollowUp.id },
+      data: {
+        status: FollowUpStatus.CANCELLED,
+        notes: existingFollowUp.notes
+      }
+    });
+
+    return { action: "cancelled" as const, followUp: cancelledFollowUp };
   }
 
-  await prisma.followUp.create({
+  if (existingFollowUp) {
+    const updatedFollowUp = await prisma.followUp.update({
+      where: { id: existingFollowUp.id },
+      data: {
+        companyId,
+        hrContactId,
+        subject: templateSubject,
+        notes: remark || existingFollowUp.notes || templateNotes,
+        type: FollowUpType.CALL,
+        status: FollowUpStatus.PENDING,
+        dueAt: nextFollowUpDate,
+        completedAt: null
+      }
+    });
+
+    return { action: "updated" as const, followUp: updatedFollowUp };
+  }
+
+  const createdFollowUp = await prisma.followUp.create({
     data: {
       companyId,
       hrContactId,
-      subject: `Follow up with ${fullName}`,
-      notes: remark || "Follow-up created from HR contact record.",
+      subject: templateSubject,
+      notes: templateNotes,
       type: FollowUpType.CALL,
       status: FollowUpStatus.PENDING,
       dueAt: nextFollowUpDate
     }
   });
+
+  return { action: "created" as const, followUp: createdFollowUp };
 }
 
 export async function createHrAction(
@@ -180,6 +252,7 @@ export async function createHrAction(
   try {
     const lastContactDate = toNullableDate(parsed.data.lastContactDate);
     const nextFollowUpDate = toNullableDate(parsed.data.nextFollowUpDate);
+    const remark = toNullableString(parsed.data.remark);
 
     const hrContact = await prisma.hrContact.create({
       data: {
@@ -191,7 +264,7 @@ export async function createHrAction(
         whatsapp: toNullableString(parsed.data.whatsapp),
         linkedIn: toNullableString(parsed.data.linkedIn),
         city: parsed.data.city,
-        remark: toNullableString(parsed.data.remark),
+        remark,
         priority: parsed.data.priority,
         lastContactDate,
         nextFollowUpDate,
@@ -199,23 +272,31 @@ export async function createHrAction(
       }
     });
 
-    await prisma.activity.create({
-      data: {
-        companyId: hrContact.companyId,
-        hrContactId: hrContact.id,
-        title: "HR contact created",
-        description: `${hrContact.fullName} was added to the HR pipeline.`,
-        type: ActivityType.HR
-      }
+    await logHrActivity({
+      companyId: hrContact.companyId,
+      hrContactId: hrContact.id,
+      title: "HR created",
+      description: `${hrContact.fullName} was added to the HR pipeline.`,
+      type: ActivityType.HR
     });
 
-    await createFollowUpForHr({
+    const followUpResult = await syncFollowUpForHr({
       companyId: hrContact.companyId,
       hrContactId: hrContact.id,
       fullName: hrContact.fullName,
       nextFollowUpDate,
-      remark: hrContact.remark
+      remark
     });
+
+    if (followUpResult.action === "created") {
+      await logHrActivity({
+        companyId: hrContact.companyId,
+        hrContactId: hrContact.id,
+        title: "Follow-up scheduled",
+        description: `Follow-up planned for ${nextFollowUpDate?.toLocaleDateString("en-IN") ?? "the next review"}.`,
+        type: ActivityType.FOLLOW_UP
+      });
+    }
 
     await revalidateHrPages();
   } catch (error) {
@@ -260,11 +341,26 @@ export async function updateHrAction(
   try {
     const existingHr = await prisma.hrContact.findUnique({
       where: { id: hrId },
-      select: { nextFollowUpDate: true }
+      select: {
+        companyId: true,
+        fullName: true,
+        remark: true,
+        nextFollowUpDate: true,
+        lastContactDate: true,
+        email: true,
+        phone: true,
+        whatsapp: true,
+        linkedIn: true,
+        designation: true,
+        city: true,
+        priority: true,
+        status: true
+      }
     });
 
     const lastContactDate = toNullableDate(parsed.data.lastContactDate);
     const nextFollowUpDate = toNullableDate(parsed.data.nextFollowUpDate);
+    const remark = toNullableString(parsed.data.remark);
 
     const hrContact = await prisma.hrContact.update({
       where: { id: hrId },
@@ -277,7 +373,7 @@ export async function updateHrAction(
         whatsapp: toNullableString(parsed.data.whatsapp),
         linkedIn: toNullableString(parsed.data.linkedIn),
         city: parsed.data.city,
-        remark: toNullableString(parsed.data.remark),
+        remark,
         priority: parsed.data.priority,
         lastContactDate,
         nextFollowUpDate,
@@ -285,27 +381,90 @@ export async function updateHrAction(
       }
     });
 
-    await prisma.activity.create({
-      data: {
+    const hasCoreChanges =
+      existingHr?.companyId !== parsed.data.companyId ||
+      existingHr?.fullName !== parsed.data.fullName ||
+      existingHr?.designation !== parsed.data.designation ||
+      existingHr?.phone !== parsed.data.phone ||
+      existingHr?.email !== parsed.data.email ||
+      existingHr?.whatsapp !== toNullableString(parsed.data.whatsapp) ||
+      existingHr?.linkedIn !== toNullableString(parsed.data.linkedIn) ||
+      existingHr?.city !== parsed.data.city ||
+      existingHr?.priority !== parsed.data.priority ||
+      existingHr?.status !== parsed.data.status ||
+      existingHr?.lastContactDate?.getTime() !== lastContactDate?.getTime();
+
+    if (hasCoreChanges) {
+      await logHrActivity({
         companyId: hrContact.companyId,
         hrContactId: hrContact.id,
-        title: "HR contact updated",
+        title: "HR updated",
         description: `${hrContact.fullName} contact details were updated.`,
         type: ActivityType.HR
-      }
-    });
+      });
+    }
+
+    const remarkChanged = existingHr?.remark !== remark;
+
+    if (remarkChanged) {
+      await logHrActivity({
+        companyId: hrContact.companyId,
+        hrContactId: hrContact.id,
+        title: remark ? "Remark updated" : "Remark cleared",
+        description: remark
+          ? `Remark changed to: ${remark}`
+          : `${hrContact.fullName}'s remark was cleared.`,
+        type: ActivityType.NOTE
+      });
+    }
 
     const nextFollowUpChanged =
       nextFollowUpDate?.getTime() !== existingHr?.nextFollowUpDate?.getTime();
+    const shouldSyncFollowUp =
+      nextFollowUpChanged || (remarkChanged && nextFollowUpDate !== null);
 
-    if (nextFollowUpChanged) {
-      await createFollowUpForHr({
+    if (shouldSyncFollowUp) {
+      const followUpResult = await syncFollowUpForHr({
         companyId: hrContact.companyId,
         hrContactId: hrContact.id,
         fullName: hrContact.fullName,
         nextFollowUpDate,
-        remark: hrContact.remark
+        remark
       });
+
+      if (followUpResult.action === "created") {
+        await logHrActivity({
+          companyId: hrContact.companyId,
+          hrContactId: hrContact.id,
+          title: "Follow-up scheduled",
+          description: nextFollowUpDate
+            ? `Follow-up scheduled for ${nextFollowUpDate.toLocaleDateString("en-IN")}.`
+            : "Follow-up schedule was cleared.",
+          type: ActivityType.FOLLOW_UP
+        });
+      }
+
+      if (followUpResult.action === "updated") {
+        await logHrActivity({
+          companyId: hrContact.companyId,
+          hrContactId: hrContact.id,
+          title: "Follow-up updated",
+          description: nextFollowUpDate
+            ? `Follow-up moved to ${nextFollowUpDate.toLocaleDateString("en-IN")}.`
+            : "Follow-up schedule was cleared.",
+          type: ActivityType.FOLLOW_UP
+        });
+      }
+
+      if (followUpResult.action === "cancelled") {
+        await logHrActivity({
+          companyId: hrContact.companyId,
+          hrContactId: hrContact.id,
+          title: "Follow-up cleared",
+          description: `${hrContact.fullName}'s pending follow-up was cancelled.`,
+          type: ActivityType.FOLLOW_UP
+        });
+      }
     }
 
     await revalidateHrPages();
@@ -325,6 +484,7 @@ export async function deleteHrAction(hrId: string) {
     where: { id: hrId },
     select: {
       id: true,
+      companyId: true,
       fullName: true
     }
   });
@@ -332,6 +492,14 @@ export async function deleteHrAction(hrId: string) {
   if (!hrContact) {
     redirect("/dashboard/hr?toast=hr-missing");
   }
+
+  await logHrActivity({
+    companyId: hrContact.companyId,
+    hrContactId: hrContact.id,
+    title: "HR deleted",
+    description: `${hrContact.fullName} was removed from the HR pipeline.`,
+    type: ActivityType.HR
+  });
 
   await prisma.hrContact.delete({
     where: { id: hrId }

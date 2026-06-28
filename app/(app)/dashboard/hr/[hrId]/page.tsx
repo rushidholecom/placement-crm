@@ -155,7 +155,7 @@ export default async function HrDetailPage({
         </CardHeader>
         <CardContent>
           <HrTimeline
-            activities={hrContact.activities}
+            activities={hrContact.company.activities}
             followUps={hrContact.followUps}
           />
         </CardContent>
