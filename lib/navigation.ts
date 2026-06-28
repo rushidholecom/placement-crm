@@ -1,4 +1,9 @@
-import { ChartNoAxesCombined, Settings, UserRoundCog } from "lucide-react";
+import {
+  Building2,
+  ChartNoAxesCombined,
+  Settings,
+  UserRoundCog
+} from "lucide-react";
 
 export const dashboardNavigation = [
   {
@@ -12,6 +17,12 @@ export const dashboardNavigation = [
     href: "/dashboard/profile",
     icon: UserRoundCog,
     description: "View the active user session"
+  },
+  {
+    title: "Companies",
+    href: "/dashboard/companies",
+    icon: Building2,
+    description: "Manage company records and recruiting partners"
   },
   {
     title: "Settings",

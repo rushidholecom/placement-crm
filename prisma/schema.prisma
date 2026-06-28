@@ -28,6 +28,20 @@ enum ActivityType {
   HR
 }
 
+enum CompanyStatus {
+  ACTIVE
+  PROSPECT
+  ON_HOLD
+  INACTIVE
+}
+
+enum CompanySize {
+  STARTUP
+  SMALL
+  MID_MARKET
+  ENTERPRISE
+}
+
 model User {
   id            String    @id @default(cuid())
   username      String    @unique
@@ -53,18 +67,26 @@ model Session {
 }
 
 model Company {
-  id          String      @id @default(cuid())
-  name        String
-  industry    String
-  location    String
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  hrContacts  HrContact[]
-  vacancies   Vacancy[]
-  followUps   FollowUp[]
-  activities  Activity[]
+  id           String        @id @default(cuid())
+  name         String
+  website      String?
+  industry     String
+  companySize  CompanySize
+  city         String
+  address      String?
+  notes        String?
+  status       CompanyStatus @default(PROSPECT)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  hrContacts   HrContact[]
+  vacancies    Vacancy[]
+  followUps    FollowUp[]
+  activities   Activity[]
 
-  @@unique([name, location])
+  @@unique([name, city])
+  @@index([status])
+  @@index([industry])
+  @@index([city])
 }
 
 model HrContact {
