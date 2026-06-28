@@ -2,7 +2,8 @@ import {
   Building2,
   ChartNoAxesCombined,
   Settings,
-  UserRoundCog
+  UserRoundCog,
+  UsersRound
 } from "lucide-react";
 
 export const dashboardNavigation = [
@@ -23,6 +24,12 @@ export const dashboardNavigation = [
     href: "/dashboard/companies",
     icon: Building2,
     description: "Manage company records and recruiting partners"
+  },
+  {
+    title: "HR Contacts",
+    href: "/dashboard/hr",
+    icon: UsersRound,
+    description: "Track recruiter contacts, duplicates, and follow-ups"
   },
   {
     title: "Settings",

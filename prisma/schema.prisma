@@ -42,6 +42,20 @@ enum CompanySize {
   ENTERPRISE
 }
 
+enum HrPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum HrStatus {
+  ACTIVE
+  DO_NOT_CONTACT
+  FOLLOW_UP
+  INACTIVE
+}
+
 model User {
   id            String    @id @default(cuid())
   username      String    @unique
@@ -90,19 +104,31 @@ model Company {
 }
 
 model HrContact {
-  id          String      @id @default(cuid())
-  companyId    String
-  fullName     String
-  email        String      @unique
-  phone        String
-  designation  String
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  company      Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  followUps    FollowUp[]
-  activities   Activity[]
+  id                String      @id @default(cuid())
+  companyId         String
+  fullName          String
+  email             String      @unique
+  phone             String
+  whatsapp          String?
+  linkedIn          String?
+  designation       String
+  city              String
+  remark            String?
+  priority          HrPriority  @default(MEDIUM)
+  lastContactDate   DateTime?
+  nextFollowUpDate  DateTime?
+  status            HrStatus    @default(ACTIVE)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  company           Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  followUps         FollowUp[]
+  activities        Activity[]
 
   @@index([companyId])
+  @@index([city])
+  @@index([priority])
+  @@index([status])
+  @@index([nextFollowUpDate])
 }
 
 model Vacancy {
@@ -111,12 +137,18 @@ model Vacancy {
   title           String
   openings        Int
   location        String
+  technology      String?
+  skills          String?
   compensationLpa Float
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   company         Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@index([companyId])
+  @@index([title])
+  @@index([location])
+  @@index([technology])
+  @@index([skills])
 }
 
 model FollowUp {

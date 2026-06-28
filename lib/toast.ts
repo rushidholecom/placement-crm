@@ -36,6 +36,26 @@ const toastRegistry: Record<string, ToastPayload> = {
     title: "Company not found",
     description: "That company record no longer exists.",
     variant: "error"
+  },
+  "hr-created": {
+    title: "HR contact created",
+    description: "The HR contact was added successfully.",
+    variant: "success"
+  },
+  "hr-updated": {
+    title: "HR contact updated",
+    description: "The HR contact details were saved successfully.",
+    variant: "success"
+  },
+  "hr-deleted": {
+    title: "HR contact deleted",
+    description: "The HR contact and related records were removed.",
+    variant: "info"
+  },
+  "hr-missing": {
+    title: "HR contact not found",
+    description: "That HR contact record no longer exists.",
+    variant: "error"
   }
 };
 

@@ -3,6 +3,8 @@ import {
   ActivityType,
   FollowUpStatus,
   FollowUpType,
+  HrPriority,
+  HrStatus,
   PrismaClient
 } from "@prisma/client";
 
@@ -40,36 +42,61 @@ async function main() {
     prisma.company.create({
       data: {
         name: "Apex Talent Systems",
+        website: "https://apextalent.example",
         industry: "SaaS",
-        location: "Bengaluru"
+        companySize: "MID_MARKET",
+        city: "Bengaluru",
+        address: "Indiranagar, Bengaluru",
+        notes: "Strong internship hiring partner.",
+        status: "ACTIVE"
       }
     }),
     prisma.company.create({
       data: {
         name: "Northstar Mobility",
+        website: "https://northstar.example",
         industry: "Automotive",
-        location: "Pune"
+        companySize: "ENTERPRISE",
+        city: "Pune",
+        address: "Hinjawadi, Pune",
+        notes: "Prefers embedded and mechanical roles.",
+        status: "PROSPECT"
       }
     }),
     prisma.company.create({
       data: {
         name: "Bluefin Analytics",
+        website: "https://bluefin.example",
         industry: "Fintech",
-        location: "Mumbai"
+        companySize: "SMALL",
+        city: "Mumbai",
+        address: "BKC, Mumbai",
+        notes: "Data roles open every quarter.",
+        status: "ACTIVE"
       }
     }),
     prisma.company.create({
       data: {
         name: "Orbit Digital Health",
+        website: "https://orbithealth.example",
         industry: "HealthTech",
-        location: "Hyderabad"
+        companySize: "MID_MARKET",
+        city: "Hyderabad",
+        address: "HITEC City, Hyderabad",
+        notes: "Requires onboarding documentation early.",
+        status: "ON_HOLD"
       }
     }),
     prisma.company.create({
       data: {
         name: "Vertex Cloud Labs",
+        website: "https://vertexcloud.example",
         industry: "Cloud Infrastructure",
-        location: "Gurugram"
+        companySize: "STARTUP",
+        city: "Gurugram",
+        address: "Cyber City, Gurugram",
+        notes: "High growth account.",
+        status: "PROSPECT"
       }
     })
   ]);
@@ -81,7 +108,15 @@ async function main() {
         fullName: "Neha Kapoor",
         email: "neha.kapoor@apextalent.example",
         phone: "+91-9876501001",
+        whatsapp: "+91-9876501001",
+        linkedIn: "https://linkedin.com/in/neha-kapoor",
         designation: "Senior Talent Partner",
+        city: "Bengaluru",
+        remark: "Primary contact for assessment scheduling.",
+        priority: HrPriority.HIGH,
+        lastContactDate: new Date(now.getTime() - hour * 24),
+        nextFollowUpDate: new Date(now.getTime() + hour * 2),
+        status: HrStatus.FOLLOW_UP,
         createdAt: new Date(now.getTime() - hour * 20)
       }
     }),
@@ -91,7 +126,15 @@ async function main() {
         fullName: "Rohit Malhotra",
         email: "rohit.malhotra@northstar.example",
         phone: "+91-9876501002",
+        whatsapp: "+91-9876501002",
+        linkedIn: "https://linkedin.com/in/rohit-malhotra",
         designation: "Lead Recruiter",
+        city: "Pune",
+        remark: "Needs drive date approval from business team.",
+        priority: HrPriority.URGENT,
+        lastContactDate: new Date(now.getTime() - hour * 30),
+        nextFollowUpDate: new Date(now.getTime() - hour * 18),
+        status: HrStatus.FOLLOW_UP,
         createdAt: new Date(now.getTime() - hour * 15)
       }
     }),
@@ -101,7 +144,15 @@ async function main() {
         fullName: "Aisha Khan",
         email: "aisha.khan@bluefin.example",
         phone: "+91-9876501003",
+        whatsapp: "+91-9876501003",
+        linkedIn: "https://linkedin.com/in/aisha-khan",
         designation: "HR Business Partner",
+        city: "Mumbai",
+        remark: "Prefers email summaries after calls.",
+        priority: HrPriority.MEDIUM,
+        lastContactDate: new Date(now.getTime() - hour * 12),
+        nextFollowUpDate: new Date(now.getTime() + hour * 26),
+        status: HrStatus.ACTIVE,
         createdAt: new Date(now.getTime() - hour * 9)
       }
     }),
@@ -111,7 +162,15 @@ async function main() {
         fullName: "Karan Sethi",
         email: "karan.sethi@orbit.example",
         phone: "+91-9876501004",
+        whatsapp: "+91-9876501004",
+        linkedIn: "https://linkedin.com/in/karan-sethi",
         designation: "Campus Hiring Manager",
+        city: "Hyderabad",
+        remark: "Awaiting onboarding deck confirmation.",
+        priority: HrPriority.MEDIUM,
+        lastContactDate: new Date(now.getTime() - hour * 18),
+        nextFollowUpDate: new Date(now.getTime() + hour * 32),
+        status: HrStatus.ACTIVE,
         createdAt: new Date(now.getTime() - hour * 6)
       }
     }),
@@ -121,7 +180,15 @@ async function main() {
         fullName: "Meera Iyer",
         email: "meera.iyer@vertex.example",
         phone: "+91-9876501005",
+        whatsapp: "+91-9876501005",
+        linkedIn: "https://linkedin.com/in/meera-iyer",
         designation: "Recruitment Specialist",
+        city: "Gurugram",
+        remark: "Fast response on cloud support profiles.",
+        priority: HrPriority.HIGH,
+        lastContactDate: new Date(now.getTime() - hour * 3),
+        nextFollowUpDate: new Date(now.getTime() + hour * 48),
+        status: HrStatus.ACTIVE,
         createdAt: new Date(now.getTime() - hour * 2)
       }
     })
@@ -134,6 +201,8 @@ async function main() {
         title: "Software Engineer Intern",
         openings: 8,
         location: "Bengaluru",
+        technology: "React, Node.js, TypeScript",
+        skills: "Frontend, REST APIs, SQL, problem solving",
         compensationLpa: 12
       },
       {
@@ -141,6 +210,8 @@ async function main() {
         title: "Associate Product Analyst",
         openings: 3,
         location: "Remote",
+        technology: "SQL, Tableau, Excel",
+        skills: "Analytics, dashboards, stakeholder communication",
         compensationLpa: 10
       },
       {
@@ -148,6 +219,8 @@ async function main() {
         title: "Embedded Systems Engineer",
         openings: 5,
         location: "Pune",
+        technology: "C, C++, CAN, RTOS",
+        skills: "Embedded development, debugging, hardware interfaces",
         compensationLpa: 9.5
       },
       {
@@ -155,6 +228,8 @@ async function main() {
         title: "Data Analyst",
         openings: 4,
         location: "Mumbai",
+        technology: "Python, SQL, Power BI",
+        skills: "Data cleaning, reporting, business analysis",
         compensationLpa: 11
       },
       {
@@ -162,6 +237,8 @@ async function main() {
         title: "Implementation Associate",
         openings: 6,
         location: "Hyderabad",
+        technology: "SaaS, CRM, APIs",
+        skills: "Client onboarding, documentation, support",
         compensationLpa: 8
       },
       {
@@ -169,6 +246,8 @@ async function main() {
         title: "Cloud Support Engineer",
         openings: 7,
         location: "Gurugram",
+        technology: "AWS, Linux, Docker",
+        skills: "Cloud support, incident response, scripting",
         compensationLpa: 10.5
       }
     ]
