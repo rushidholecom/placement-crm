@@ -7,6 +7,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum FollowUpType {
+  CALL
+  EMAIL
+  MEETING
+}
+
+enum FollowUpStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+enum ActivityType {
+  NOTE
+  CALL
+  EMAIL
+  FOLLOW_UP
+  VACANCY
+  HR
+}
+
 model User {
   id            String    @id @default(cuid())
   username      String    @unique
@@ -29,4 +50,86 @@ model Session {
 
   @@index([userId])
   @@index([expiresAt])
+}
+
+model Company {
+  id          String      @id @default(cuid())
+  name        String
+  industry    String
+  location    String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  hrContacts  HrContact[]
+  vacancies   Vacancy[]
+  followUps   FollowUp[]
+  activities  Activity[]
+
+  @@unique([name, location])
+}
+
+model HrContact {
+  id          String      @id @default(cuid())
+  companyId    String
+  fullName     String
+  email        String      @unique
+  phone        String
+  designation  String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  company      Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  followUps    FollowUp[]
+  activities   Activity[]
+
+  @@index([companyId])
+}
+
+model Vacancy {
+  id             String    @id @default(cuid())
+  companyId       String
+  title           String
+  openings        Int
+  location        String
+  compensationLpa Float
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  company         Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+}
+
+model FollowUp {
+  id           String          @id @default(cuid())
+  companyId     String
+  hrContactId   String?
+  subject       String
+  notes         String
+  type          FollowUpType
+  status        FollowUpStatus @default(PENDING)
+  dueAt         DateTime
+  completedAt   DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  company       Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  hrContact     HrContact?     @relation(fields: [hrContactId], references: [id], onDelete: SetNull)
+
+  @@index([companyId])
+  @@index([hrContactId])
+  @@index([dueAt])
+  @@index([status])
+}
+
+model Activity {
+  id           String       @id @default(cuid())
+  companyId     String?
+  hrContactId   String?
+  title         String
+  description   String
+  type          ActivityType
+  createdAt     DateTime     @default(now())
+  company       Company?      @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  hrContact     HrContact?    @relation(fields: [hrContactId], references: [id], onDelete: SetNull)
+
+  @@index([companyId])
+  @@index([hrContactId])
+  @@index([createdAt])
 }

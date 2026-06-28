@@ -5,7 +5,7 @@ export const dashboardNavigation = [
     title: "Overview",
     href: "/dashboard",
     icon: ChartNoAxesCombined,
-    description: "Authentication and system status"
+    description: "Live follow-ups, HR activity, and company metrics"
   },
   {
     title: "Profile",
