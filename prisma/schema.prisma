@@ -134,6 +134,7 @@ model Company {
   followUps    FollowUp[]
   activities   Activity[]
   reminders    FollowUpReminder[]
+  emailLogs    EmailLog[]
 
   @@unique([name, city])
   @@index([name])
@@ -166,6 +167,7 @@ model HrContact {
   activities        Activity[]
   reminders         FollowUpReminder[]
   assignedVacancies Vacancy[]
+  emailLogs         EmailLog[]
 
   @@index([companyId])
   @@index([city])
