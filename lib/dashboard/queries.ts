@@ -30,6 +30,10 @@ export async function getDashboardData() {
     prisma.followUp.count({
       where: {
         status: FollowUpStatus.PENDING,
+        deletedAt: null,
+        company: {
+          deletedAt: null
+        },
         dueAt: {
           gte: start,
           lt: end
@@ -39,6 +43,10 @@ export async function getDashboardData() {
     prisma.followUp.count({
       where: {
         status: FollowUpStatus.PENDING,
+        deletedAt: null,
+        company: {
+          deletedAt: null
+        },
         dueAt: {
           lt: start
         }
@@ -48,6 +56,10 @@ export async function getDashboardData() {
       where: {
         status: FollowUpStatus.PENDING,
         type: FollowUpType.CALL,
+        deletedAt: null,
+        company: {
+          deletedAt: null
+        },
         dueAt: {
           gte: start,
           lt: end
@@ -58,21 +70,50 @@ export async function getDashboardData() {
       where: {
         status: FollowUpStatus.PENDING,
         type: FollowUpType.EMAIL,
+        deletedAt: null,
+        company: {
+          deletedAt: null
+        },
         dueAt: {
           gte: start,
           lt: end
         }
       }
     }),
-    prisma.company.count(),
-    prisma.hrContact.count(),
-    prisma.vacancy.count(),
+    prisma.company.count({ where: { deletedAt: null } }),
+    prisma.hrContact.count({
+      where: {
+        deletedAt: null,
+        company: {
+          deletedAt: null
+        }
+      }
+    }),
+    prisma.vacancy.count({
+      where: {
+        deletedAt: null,
+        company: {
+          deletedAt: null
+        }
+      }
+    }),
     prisma.activity.findMany({
+      where: {
+        deletedAt: null,
+        company: {
+          deletedAt: null
+        }
+      },
       orderBy: {
         createdAt: "desc"
       },
       take: 6,
-      include: {
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        type: true,
+        createdAt: true,
         company: {
           select: {
             name: true
@@ -88,6 +129,10 @@ export async function getDashboardData() {
     prisma.followUp.findMany({
       where: {
         status: FollowUpStatus.PENDING,
+        deletedAt: null,
+        company: {
+          deletedAt: null
+        },
         dueAt: {
           gt: now
         }
@@ -96,7 +141,12 @@ export async function getDashboardData() {
         dueAt: "asc"
       },
       take: 5,
-      include: {
+      select: {
+        id: true,
+        subject: true,
+        notes: true,
+        type: true,
+        dueAt: true,
         company: {
           select: {
             name: true
@@ -111,11 +161,23 @@ export async function getDashboardData() {
       }
     }),
     prisma.hrContact.findMany({
+      where: {
+        deletedAt: null,
+        company: {
+          deletedAt: null
+        }
+      },
       orderBy: {
         createdAt: "desc"
       },
       take: 5,
-      include: {
+      select: {
+        id: true,
+        fullName: true,
+        designation: true,
+        email: true,
+        phone: true,
+        createdAt: true,
         company: {
           select: {
             name: true

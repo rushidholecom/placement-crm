@@ -16,6 +16,13 @@ async function getActiveReminderOverview(): Promise<ReminderOverview> {
   const [reminders, counts, totalUnread] = await Promise.all([
     prisma.followUpReminder.findMany({
       where: {
+        deletedAt: null,
+        company: {
+          deletedAt: null
+        },
+        followUp: {
+          deletedAt: null
+        },
         status: ReminderStatus.UNREAD
       },
       orderBy: [
@@ -41,6 +48,13 @@ async function getActiveReminderOverview(): Promise<ReminderOverview> {
     prisma.followUpReminder.groupBy({
       by: ["bucket"],
       where: {
+        deletedAt: null,
+        company: {
+          deletedAt: null
+        },
+        followUp: {
+          deletedAt: null
+        },
         status: ReminderStatus.UNREAD
       },
       _count: {
@@ -49,6 +63,13 @@ async function getActiveReminderOverview(): Promise<ReminderOverview> {
     }),
     prisma.followUpReminder.count({
       where: {
+        deletedAt: null,
+        company: {
+          deletedAt: null
+        },
+        followUp: {
+          deletedAt: null
+        },
         status: ReminderStatus.UNREAD
       }
     })

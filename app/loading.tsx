@@ -2,19 +2,25 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function RootLoading() {
   return (
-    <main className="container flex min-h-screen flex-col justify-center gap-10 py-10">
-      <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="space-y-6">
-          <Skeleton className="h-10 w-56" />
-          <Skeleton className="h-16 w-full max-w-2xl" />
-          <Skeleton className="h-24 w-full max-w-xl" />
-          <div className="grid gap-4 md:grid-cols-3">
-            <Skeleton className="h-44 rounded-2xl" />
-            <Skeleton className="h-44 rounded-2xl" />
-            <Skeleton className="h-44 rounded-2xl" />
-          </div>
+    <main className="container flex min-h-screen flex-col justify-center py-10">
+      <div className="mx-auto w-full max-w-6xl space-y-8">
+        <div className="space-y-3">
+          <Skeleton className="h-4 w-28 rounded-full" />
+          <Skeleton className="h-12 w-full max-w-3xl rounded-2xl" />
+          <Skeleton className="h-6 w-full max-w-2xl rounded-full" />
         </div>
-        <Skeleton className="mx-auto h-[520px] w-full max-w-md rounded-3xl" />
+
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          <Skeleton className="h-36 rounded-3xl" />
+          <Skeleton className="h-36 rounded-3xl" />
+          <Skeleton className="h-36 rounded-3xl" />
+          <Skeleton className="h-36 rounded-3xl" />
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+          <Skeleton className="h-[420px] rounded-3xl" />
+          <Skeleton className="h-[420px] rounded-3xl" />
+        </div>
       </div>
     </main>
   );

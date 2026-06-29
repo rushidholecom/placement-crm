@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import { AlertOctagon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 type GlobalErrorPageProps = {
   error: Error & { digest?: string };
@@ -32,8 +33,11 @@ export default function GlobalErrorPage({
           <div className="mt-6 rounded-2xl border border-dashed border-border p-4 text-sm text-muted-foreground">
             {error.message || "Unexpected startup error."}
           </div>
-          <div className="mt-6">
+          <div className="mt-6 flex flex-wrap gap-3">
             <Button onClick={reset}>Retry application load</Button>
+            <Link href="/login" className={buttonVariants({ variant: "outline" })}>
+              Go to login
+            </Link>
           </div>
         </div>
       </body>

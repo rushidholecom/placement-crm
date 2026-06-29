@@ -197,6 +197,15 @@ async function executeFollowUpReminderSweep(now = new Date()) {
 
   const scheduledFor = buildScheduledFor(now);
   const reminders = await prisma.followUpReminder.findMany({
+    where: {
+      deletedAt: null,
+      company: {
+        deletedAt: null
+      },
+      followUp: {
+        deletedAt: null
+      }
+    },
     include: {
       followUp: {
         include: {
@@ -225,7 +234,11 @@ async function executeFollowUpReminderSweep(now = new Date()) {
 
   const pendingFollowUps = await prisma.followUp.findMany({
     where: {
-      status: FollowUpStatus.PENDING
+      status: FollowUpStatus.PENDING,
+      deletedAt: null,
+      company: {
+        deletedAt: null
+      }
     },
     include: {
       company: {
@@ -270,8 +283,11 @@ async function executeFollowUpReminderSweep(now = new Date()) {
     const bucket = getReminderBucket(followUp.dueAt, now);
 
     if (!bucket) {
-      await prisma.followUpReminder.delete({
-        where: { id: reminder.id }
+      await prisma.followUpReminder.update({
+        where: { id: reminder.id },
+        data: {
+          deletedAt: now
+        }
       });
       deleted += 1;
       continue;

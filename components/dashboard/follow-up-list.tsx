@@ -78,7 +78,7 @@ export function FollowUpList({
                       </span>
                       {item.hrContact ? (
                         <span>
-                          {item.hrContact.fullName} • {item.hrContact.designation}
+                        {item.hrContact.fullName} - {item.hrContact.designation}
                         </span>
                       ) : null}
                     </div>

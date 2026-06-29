@@ -77,6 +77,7 @@ async function getDuplicateFieldErrors({
 }) {
   const duplicates = await prisma.hrContact.findMany({
     where: {
+      deletedAt: null,
       ...(currentHrId ? { id: { not: currentHrId } } : {}),
       OR: [
         { email },
@@ -166,6 +167,7 @@ async function syncFollowUpForHr({
   const existingFollowUp = await prisma.followUp.findFirst({
     where: {
       hrContactId,
+      deletedAt: null,
       status: FollowUpStatus.PENDING,
       subject: {
         startsWith: "Follow up with "
@@ -339,8 +341,11 @@ export async function updateHrAction(
   }
 
   try {
-    const existingHr = await prisma.hrContact.findUnique({
-      where: { id: hrId },
+    const existingHr = await prisma.hrContact.findFirst({
+      where: {
+        id: hrId,
+        deletedAt: null
+      },
       select: {
         companyId: true,
         fullName: true,
@@ -480,8 +485,11 @@ export async function updateHrAction(
 }
 
 export async function deleteHrAction(hrId: string) {
-  const hrContact = await prisma.hrContact.findUnique({
-    where: { id: hrId },
+  const hrContact = await prisma.hrContact.findFirst({
+    where: {
+      id: hrId,
+      deletedAt: null
+    },
     select: {
       id: true,
       companyId: true,
@@ -501,8 +509,11 @@ export async function deleteHrAction(hrId: string) {
     type: ActivityType.HR
   });
 
-  await prisma.hrContact.delete({
-    where: { id: hrId }
+  await prisma.hrContact.update({
+    where: { id: hrId },
+    data: {
+      deletedAt: new Date()
+    }
   });
 
   await revalidateHrPages();

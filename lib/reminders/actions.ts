@@ -6,8 +6,14 @@ import { revalidateReminderSurfaces } from "@/lib/reminders/revalidate";
 import { revalidateDashboard } from "@/lib/dashboard/revalidate";
 
 async function resolveReminder(reminderId: string, status: ReminderStatus) {
-  const reminder = await prisma.followUpReminder.findUnique({
-    where: { id: reminderId },
+  const reminder = await prisma.followUpReminder.findFirst({
+    where: {
+      id: reminderId,
+      deletedAt: null,
+      followUp: {
+        deletedAt: null
+      }
+    },
     include: {
       followUp: true
     }

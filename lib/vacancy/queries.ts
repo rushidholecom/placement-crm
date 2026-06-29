@@ -7,6 +7,10 @@ import type { ActivityType } from "@prisma/client";
 function where(filters: VacanciesQueryInput): Prisma.VacancyWhereInput {
   const search = filters.search.trim();
   return {
+    deletedAt: null,
+    company: {
+      deletedAt: null
+    },
     ...(search ? { OR: [
       { title: { contains: search } },
       { location: { contains: search } },
@@ -62,10 +66,16 @@ export async function getVacanciesPage(searchParams?: Record<string, string | st
     }),
     prisma.vacancy.count({ where: whereClause }),
     prisma.company.findMany({
+      where: { deletedAt: null },
       select: { id: true, name: true, city: true },
       orderBy: { name: "asc" }
     }),
-    prisma.vacancy.findMany({ distinct: ["location"], select: { location: true }, orderBy: { location: "asc" } })
+    prisma.vacancy.findMany({
+      where: { deletedAt: null },
+      distinct: ["location"],
+      select: { location: true },
+      orderBy: { location: "asc" }
+    })
   ]);
 
   return {
@@ -80,16 +90,25 @@ export async function getVacanciesPage(searchParams?: Record<string, string | st
 export async function getVacancyFormOptions() {
   const [companies, recruiters] = await Promise.all([
     prisma.company.findMany({
+      where: { deletedAt: null },
       select: { id: true, name: true, city: true },
       orderBy: { name: "asc" }
     }),
     prisma.hrContact.findMany({
+      where: {
+        deletedAt: null,
+        company: {
+          deletedAt: null
+        }
+      },
       select: {
         id: true,
         fullName: true,
         designation: true,
         city: true,
-        company: { select: { id: true, name: true, city: true } }
+        company: {
+          select: { id: true, name: true, city: true }
+        }
       },
       orderBy: { fullName: "asc" }
     })
@@ -98,8 +117,11 @@ export async function getVacancyFormOptions() {
 }
 
 export async function getVacancyById(vacancyId: string) {
-  return prisma.vacancy.findUnique({
-    where: { id: vacancyId },
+  return prisma.vacancy.findFirst({
+    where: {
+      id: vacancyId,
+      deletedAt: null
+    },
     include: {
       company: {
         select: {
@@ -161,8 +183,11 @@ function classifyVacancyTimelineItem(title: string): VacancyTimelineKind {
 }
 
 export async function getVacancyTimeline(vacancyId: string) {
-  const vacancy = await prisma.vacancy.findUnique({
-    where: { id: vacancyId },
+  const vacancy = await prisma.vacancy.findFirst({
+    where: {
+      id: vacancyId,
+      deletedAt: null
+    },
     select: { companyId: true, assignedRecruiterId: true }
   });
 
@@ -170,6 +195,7 @@ export async function getVacancyTimeline(vacancyId: string) {
 
   const activities = await prisma.activity.findMany({
     where: {
+      deletedAt: null,
       OR: [
         { companyId: vacancy.companyId },
         ...(vacancy.assignedRecruiterId ? [{ hrContactId: vacancy.assignedRecruiterId }] : [])

@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import { AlertTriangle } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 type GlobalErrorProps = {
@@ -17,7 +18,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
 
   return (
     <main className="container flex min-h-screen items-center justify-center py-10">
-      <Card className="w-full max-w-xl">
+      <Card className="w-full max-w-xl border-border/60 shadow-soft">
         <CardHeader>
           <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-300">
             <AlertTriangle className="h-6 w-6" />
@@ -31,7 +32,12 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
           <div className="rounded-2xl border border-dashed border-border p-4 text-sm text-muted-foreground">
             {error.message || "Unexpected application error."}
           </div>
-          <Button onClick={reset}>Try again</Button>
+          <div className="flex flex-wrap gap-3">
+            <Button onClick={reset}>Try again</Button>
+            <Link href="/dashboard" className={buttonVariants({ variant: "outline" })}>
+              Back to dashboard
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </main>

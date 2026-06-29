@@ -24,6 +24,12 @@ function applyTheme(theme: Theme) {
   document.documentElement.classList.toggle("dark", theme === "dark");
 }
 
+function getSystemTheme(): Theme {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+}
+
 type ThemeProviderProps = {
   children: ReactNode;
 };
@@ -38,6 +44,21 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
     setThemeState(resolvedTheme);
     applyTheme(resolvedTheme);
+
+    if (!storedTheme) {
+      const media = window.matchMedia("(prefers-color-scheme: dark)");
+      const syncTheme = () => {
+        const nextTheme = getSystemTheme();
+        setThemeState(nextTheme);
+        applyTheme(nextTheme);
+      };
+
+      media.addEventListener("change", syncTheme);
+
+      return () => {
+        media.removeEventListener("change", syncTheme);
+      };
+    }
   }, []);
 
   const setTheme = (value: Theme) => {

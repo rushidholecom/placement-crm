@@ -1,11 +1,20 @@
+import dynamic from "next/dynamic";
 import { BellDot, ShieldCheck } from "lucide-react";
 import { logoutAction } from "@/app/actions";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
-import { GlobalSearch } from "@/components/search/global-search";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { ReminderOverview } from "@/lib/reminders/types";
+
+const GlobalSearch = dynamic(
+  () => import("@/components/search/global-search").then((module) => module.GlobalSearch),
+  {
+    loading: () => (
+      <div className="h-11 w-full rounded-2xl border border-slate-200/80 bg-white/80 dark:border-slate-800 dark:bg-slate-900/80" />
+    )
+  }
+);
 
 type AppNavbarProps = {
   fullName: string;

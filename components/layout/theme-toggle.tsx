@@ -8,7 +8,15 @@ export function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <Button type="button" variant="outline" size="icon" onClick={toggleTheme}>
+    <Button
+      type="button"
+      variant="outline"
+      size="icon"
+      onClick={toggleTheme}
+      aria-label="Toggle theme"
+      aria-pressed={theme === "dark"}
+      title="Toggle theme"
+    >
       {theme === "dark" ? (
         <SunMedium className="h-4 w-4" />
       ) : (

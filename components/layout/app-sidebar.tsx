@@ -33,6 +33,7 @@ export function AppSidebar() {
               <Link
                 key={item.href}
                 href={item.href}
+                aria-current={isActive ? "page" : undefined}
                 className={cn(
                   "flex items-start gap-3 rounded-2xl px-4 py-3 transition",
                   isActive

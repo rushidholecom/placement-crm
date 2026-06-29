@@ -28,6 +28,7 @@ export async function globalSearch(query: string): Promise<GlobalSearchResponse>
   const [companies, hrContacts, vacancies] = await Promise.all([
     prisma.company.findMany({
       where: {
+        deletedAt: null,
         OR: [
           { name: { contains: normalizedQuery } },
           { website: { contains: normalizedQuery } },
@@ -53,6 +54,9 @@ export async function globalSearch(query: string): Promise<GlobalSearchResponse>
         industry: true,
         notes: true,
         hrContacts: {
+          where: {
+            deletedAt: null
+          },
           orderBy: [{ priority: "desc" }, { createdAt: "desc" }],
           take: 1,
           select: {
@@ -62,6 +66,7 @@ export async function globalSearch(query: string): Promise<GlobalSearchResponse>
         },
         followUps: {
           where: {
+            deletedAt: null,
             status: FollowUpStatus.PENDING
           },
           orderBy: {
@@ -76,6 +81,10 @@ export async function globalSearch(query: string): Promise<GlobalSearchResponse>
     }),
     prisma.hrContact.findMany({
       where: {
+        deletedAt: null,
+        company: {
+          deletedAt: null
+        },
         OR: [
           { fullName: { contains: normalizedQuery } },
           { designation: { contains: normalizedQuery } },
@@ -110,6 +119,7 @@ export async function globalSearch(query: string): Promise<GlobalSearchResponse>
         },
         followUps: {
           where: {
+            deletedAt: null,
             status: FollowUpStatus.PENDING
           },
           orderBy: {
@@ -124,6 +134,10 @@ export async function globalSearch(query: string): Promise<GlobalSearchResponse>
     }),
     prisma.vacancy.findMany({
       where: {
+        deletedAt: null,
+        company: {
+          deletedAt: null
+        },
         OR: [
           { title: { contains: normalizedQuery } },
           { location: { contains: normalizedQuery } },
@@ -151,6 +165,9 @@ export async function globalSearch(query: string): Promise<GlobalSearchResponse>
             name: true,
             notes: true,
             hrContacts: {
+              where: {
+                deletedAt: null
+              },
               orderBy: [{ priority: "desc" }, { createdAt: "desc" }],
               take: 1,
               select: {
@@ -161,6 +178,7 @@ export async function globalSearch(query: string): Promise<GlobalSearchResponse>
             },
             followUps: {
               where: {
+                deletedAt: null,
                 status: FollowUpStatus.PENDING
               },
               orderBy: {

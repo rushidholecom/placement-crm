@@ -10,6 +10,7 @@ function buildCompanyWhereClause(filters: CompaniesQueryInput): Prisma.CompanyWh
   const search = filters.search.trim();
 
   return {
+    deletedAt: null,
     ...(search
       ? {
           OR: [
@@ -82,11 +83,13 @@ export async function getCompaniesPage(
     }),
     prisma.company.count({ where }),
     prisma.company.findMany({
+      where: { deletedAt: null },
       distinct: ["industry"],
       select: { industry: true },
       orderBy: { industry: "asc" }
     }),
     prisma.company.findMany({
+      where: { deletedAt: null },
       distinct: ["city"],
       select: { city: true },
       orderBy: { city: "asc" }
@@ -106,8 +109,11 @@ export async function getCompaniesPage(
 }
 
 export async function getCompanyById(companyId: string) {
-  return prisma.company.findUnique({
-    where: { id: companyId },
+  return prisma.company.findFirst({
+    where: {
+      id: companyId,
+      deletedAt: null
+    },
     include: {
       _count: {
         select: {

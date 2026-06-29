@@ -30,13 +30,16 @@ async function ensureEmailDefaults() {
     ...DEFAULT_EMAIL_TEMPLATES.map((template) =>
       prisma.emailTemplate.upsert({
         where: { key: template.key },
-        update: {},
+        update: {
+          deletedAt: null
+        },
         create: {
           key: template.key,
           label: template.label,
           subject: template.subject,
           body: template.body,
-          isDefault: true
+          isDefault: true,
+          deletedAt: null
         }
       })
     )
@@ -66,11 +69,13 @@ export async function getEmailPage() {
         }
       }),
       prisma.emailTemplate.findMany({
+        where: { deletedAt: null },
         orderBy: {
           label: "asc"
         }
       }),
       prisma.emailLog.findMany({
+        where: { deletedAt: null },
         orderBy: {
           createdAt: "desc"
         },
@@ -92,6 +97,7 @@ export async function getEmailPage() {
         }
       }),
       prisma.company.findMany({
+        where: { deletedAt: null },
         select: {
           id: true,
           name: true,
@@ -102,6 +108,12 @@ export async function getEmailPage() {
         }
       }),
       prisma.hrContact.findMany({
+        where: {
+          deletedAt: null,
+          company: {
+            deletedAt: null
+          }
+        },
         select: {
           id: true,
           fullName: true,

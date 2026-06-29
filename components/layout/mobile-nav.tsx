@@ -18,6 +18,7 @@ export function MobileNav() {
           <Link
             key={item.href}
             href={item.href}
+            aria-current={isActive ? "page" : undefined}
             className={cn(
               "rounded-2xl border px-3 py-3 text-center text-sm font-medium transition",
               isActive

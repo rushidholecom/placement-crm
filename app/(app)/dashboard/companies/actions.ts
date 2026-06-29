@@ -147,8 +147,11 @@ export async function updateCompanyAction(
 }
 
 export async function deleteCompanyAction(companyId: string) {
-  const company = await prisma.company.findUnique({
-    where: { id: companyId },
+  const company = await prisma.company.findFirst({
+    where: {
+      id: companyId,
+      deletedAt: null
+    },
     select: { id: true, name: true }
   });
 
@@ -156,8 +159,11 @@ export async function deleteCompanyAction(companyId: string) {
     redirect("/dashboard/companies?toast=company-missing");
   }
 
-  await prisma.company.delete({
-    where: { id: companyId }
+  await prisma.company.update({
+    where: { id: companyId },
+    data: {
+      deletedAt: new Date()
+    }
   });
 
   await revalidateCompanyPages();

@@ -74,7 +74,7 @@ export function ActivityFeed({ items }: ActivityFeedProps) {
                     {item.description}
                   </p>
                   <p className="mt-2 text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                    {item.hrContact ? `${item.hrContact.fullName} • ` : ""}
+                    {item.hrContact ? `${item.hrContact.fullName} - ` : ""}
                     {formatTime(item.createdAt)}
                   </p>
                 </div>

@@ -7,6 +7,10 @@ function buildHrWhereClause(filters: HrQueryInput): Prisma.HrContactWhereInput {
   const search = filters.search.trim();
 
   return {
+    deletedAt: null,
+    company: {
+      deletedAt: null
+    },
     ...(search
       ? {
           OR: [
@@ -94,6 +98,7 @@ export async function getHrPage(
       }),
       prisma.hrContact.count({ where }),
       prisma.company.findMany({
+        where: { deletedAt: null },
         select: {
           id: true,
           name: true
@@ -103,6 +108,7 @@ export async function getHrPage(
         }
       }),
       prisma.hrContact.findMany({
+        where: { deletedAt: null },
         distinct: ["city"],
         select: { city: true },
         orderBy: { city: "asc" }
@@ -110,6 +116,10 @@ export async function getHrPage(
       prisma.hrContact.groupBy({
         by: ["phone"],
         where: {
+          deletedAt: null,
+          company: {
+            deletedAt: null
+          },
           phone: {
             not: ""
           }
@@ -146,6 +156,7 @@ export async function getHrPage(
 
 export async function getHrFormOptions() {
   return prisma.company.findMany({
+    where: { deletedAt: null },
     select: {
       id: true,
       name: true,
@@ -158,8 +169,11 @@ export async function getHrFormOptions() {
 }
 
 export async function getHrById(hrId: string) {
-  return prisma.hrContact.findUnique({
-    where: { id: hrId },
+  return prisma.hrContact.findFirst({
+    where: {
+      id: hrId,
+      deletedAt: null
+    },
     include: {
       company: {
         select: {
@@ -168,6 +182,7 @@ export async function getHrById(hrId: string) {
           industry: true,
           city: true,
           activities: {
+            where: { deletedAt: null },
             orderBy: {
               createdAt: "desc"
             },
@@ -176,6 +191,7 @@ export async function getHrById(hrId: string) {
         }
       },
       followUps: {
+        where: { deletedAt: null },
         orderBy: {
           dueAt: "desc"
         },

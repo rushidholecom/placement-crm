@@ -207,14 +207,16 @@ export async function saveEmailTemplateAction(
       label: template?.label ?? parsed.data.key,
       subject: parsed.data.subject,
       body: parsed.data.body,
-      isDefault: true
+      isDefault: true,
+      deletedAt: null
     },
     create: {
       key: parsed.data.key,
       label: template?.label ?? parsed.data.key,
       subject: parsed.data.subject,
       body: parsed.data.body,
-      isDefault: true
+      isDefault: true,
+      deletedAt: null
     }
   });
 
@@ -245,12 +247,21 @@ export async function sendEmailAction(
     prisma.emailSettings.findUnique({
       where: { key: "default" }
     }),
-    prisma.emailTemplate.findUnique({
-      where: { key: parsed.data.templateKey }
+    prisma.emailTemplate.findFirst({
+      where: {
+        key: parsed.data.templateKey,
+        deletedAt: null
+      }
     }),
     parsed.data.hrContactId
-      ? prisma.hrContact.findUnique({
-          where: { id: parsed.data.hrContactId },
+      ? prisma.hrContact.findFirst({
+          where: {
+            id: parsed.data.hrContactId,
+            deletedAt: null,
+            company: {
+              deletedAt: null
+            }
+          },
           select: {
             id: true,
             companyId: true,
@@ -286,14 +297,27 @@ export async function sendEmailAction(
   }
 
   const company = parsed.data.companyId
-    ? await prisma.company.findUnique({
-        where: { id: parsed.data.companyId },
+    ? await prisma.company.findFirst({
+        where: {
+          id: parsed.data.companyId,
+          deletedAt: null
+        },
         select: {
           id: true,
           name: true
         }
       })
     : hrContact?.company ?? null;
+
+  if (parsed.data.companyId && !company) {
+    return {
+      success: false,
+      message: "Selected company was not found.",
+      fieldErrors: {
+        companyId: ["Selected company is missing."]
+      }
+    };
+  }
 
   const resolvedSignature =
     settings.signature?.trim() || `Regards,\n${settings.fromName}`;

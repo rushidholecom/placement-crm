@@ -46,6 +46,9 @@ export function NotificationBell({ data }: NotificationBellProps) {
         size="sm"
         className="relative gap-2 rounded-full border-slate-200 bg-white/95 px-3 py-2 shadow-sm dark:border-slate-800 dark:bg-slate-950/80"
         onClick={() => setOpen((value) => !value)}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        aria-label={`Notifications, ${data.totalUnread} unread`}
       >
         <BellRing className="h-4 w-4" />
         Notifications

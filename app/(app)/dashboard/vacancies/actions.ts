@@ -45,8 +45,11 @@ async function validateReferences({
 }) {
   const fieldErrors: VacancyFormState["fieldErrors"] = {};
 
-  const company = await prisma.company.findUnique({
-    where: { id: companyId },
+  const company = await prisma.company.findFirst({
+    where: {
+      id: companyId,
+      deletedAt: null
+    },
     select: { id: true }
   });
 
@@ -55,8 +58,11 @@ async function validateReferences({
   }
 
   if (assignedRecruiterId) {
-    const recruiter = await prisma.hrContact.findUnique({
-      where: { id: assignedRecruiterId },
+    const recruiter = await prisma.hrContact.findFirst({
+      where: {
+        id: assignedRecruiterId,
+        deletedAt: null
+      },
       select: { id: true, fullName: true, companyId: true }
     });
 
@@ -123,8 +129,11 @@ export async function updateVacancyAction(vacancyId: string, _state: VacancyForm
 }
 
 export async function deleteVacancyAction(vacancyId: string) {
-  const vacancy = await prisma.vacancy.findUnique({
-    where: { id: vacancyId },
+  const vacancy = await prisma.vacancy.findFirst({
+    where: {
+      id: vacancyId,
+      deletedAt: null
+    },
     select: {
       id: true,
       companyId: true,
@@ -142,7 +151,12 @@ export async function deleteVacancyAction(vacancyId: string) {
       type: ActivityType.VACANCY
     }
   });
-  await prisma.vacancy.delete({ where: { id: vacancyId } });
+  await prisma.vacancy.update({
+    where: { id: vacancyId },
+    data: {
+      deletedAt: new Date()
+    }
+  });
   await revalidateVacancyPages();
   redirect("/dashboard/vacancies?toast=vacancy-deleted");
 }

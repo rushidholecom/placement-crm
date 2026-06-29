@@ -250,6 +250,7 @@ export function GlobalSearch() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const trimmedQuery = query.trim();
 
   const shouldSearch = trimmedQuery.length >= 2;
@@ -312,6 +313,22 @@ export function GlobalSearch() {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         setIsOpen(false);
+        inputRef.current?.blur();
+      }
+
+      const activeElement = document.activeElement as HTMLElement | null;
+      const isTypingField =
+        activeElement?.tagName === "INPUT" ||
+        activeElement?.tagName === "TEXTAREA" ||
+        activeElement?.isContentEditable;
+
+      if (
+        (event.key === "/" || (event.key.toLowerCase() === "k" && (event.metaKey || event.ctrlKey))) &&
+        !isTypingField
+      ) {
+        event.preventDefault();
+        setIsOpen(true);
+        inputRef.current?.focus();
       }
     }
 
@@ -361,12 +378,16 @@ export function GlobalSearch() {
       >
         <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
         <input
+          ref={inputRef}
           value={query}
           onChange={(event) => {
             setQuery(event.target.value);
             setIsOpen(true);
           }}
           onFocus={() => setIsOpen(true)}
+          aria-label="Global search"
+          aria-expanded={isOpen}
+          aria-controls="global-search-results"
           placeholder="Search companies, HR, phone, email, vacancies, city, skills"
           className="h-full min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
         />
@@ -379,6 +400,7 @@ export function GlobalSearch() {
               setQuery("");
               setResults(emptyResults);
               setError("");
+              inputRef.current?.focus();
             }}
             className="inline-flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground transition hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50"
             aria-label="Clear search"
@@ -389,8 +411,15 @@ export function GlobalSearch() {
       </form>
 
       {isOpen ? (
-        <div className="absolute left-0 right-0 top-[3.25rem] z-50 overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-2xl shadow-slate-950/10 dark:border-slate-800 dark:bg-slate-950">
-          <div className="border-b border-slate-200/80 px-4 py-3 text-xs font-medium text-muted-foreground dark:border-slate-800">
+        <div
+          id="global-search-results"
+          className="absolute left-0 right-0 top-[3.25rem] z-50 overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-2xl shadow-slate-950/10 dark:border-slate-800 dark:bg-slate-950"
+        >
+          <div
+            className="border-b border-slate-200/80 px-4 py-3 text-xs font-medium text-muted-foreground dark:border-slate-800"
+            role="status"
+            aria-live="polite"
+          >
             {statusText}
           </div>
           <div className="max-h-[70vh] space-y-5 overflow-y-auto p-4">

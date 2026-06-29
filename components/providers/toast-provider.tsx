@@ -96,7 +96,12 @@ export function ToastProvider({ children }: ToastProviderProps) {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <div className="pointer-events-none fixed right-4 top-4 z-50 flex w-full max-w-sm flex-col gap-3">
+      <div
+        className="pointer-events-none fixed right-4 top-4 z-50 flex w-full max-w-sm flex-col gap-3"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
         {toasts.map((toast) => {
           const variant = toast.variant ?? "info";
 
