@@ -10,33 +10,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { revalidateHrPages } from "@/lib/hr/revalidate";
 import { hrFormSchema } from "@/lib/hr/validators";
-
-type HrFieldName =
-  | "fullName"
-  | "designation"
-  | "companyId"
-  | "phone"
-  | "email"
-  | "whatsapp"
-  | "linkedIn"
-  | "city"
-  | "remark"
-  | "priority"
-  | "lastContactDate"
-  | "nextFollowUpDate"
-  | "status";
-
-export type HrFormState = {
-  success: boolean;
-  message: string;
-  fieldErrors: Partial<Record<HrFieldName, string[]>>;
-};
-
-export const initialHrFormState: HrFormState = {
-  success: false,
-  message: "",
-  fieldErrors: {}
-};
+import { type HrFormState } from "@/app/(app)/dashboard/hr/state";
 
 function normalizeHrFormData(formData: FormData) {
   return hrFormSchema.safeParse({

@@ -5,30 +5,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { companyFormSchema } from "@/lib/company/validators";
 import { revalidateCompanyPages } from "@/lib/company/revalidate";
-
-export type CompanyFormState = {
-  success: boolean;
-  message: string;
-  fieldErrors: Partial<
-    Record<
-      | "name"
-      | "website"
-      | "industry"
-      | "companySize"
-      | "city"
-      | "address"
-      | "notes"
-      | "status",
-      string[]
-    >
-  >;
-};
-
-export const initialCompanyFormState: CompanyFormState = {
-  success: false,
-  message: "",
-  fieldErrors: {}
-};
+import { initialCompanyFormState, type CompanyFormState } from "@/app/(app)/dashboard/companies/state";
 
 function normalizeCompanyFormData(formData: FormData) {
   return companyFormSchema.safeParse({
