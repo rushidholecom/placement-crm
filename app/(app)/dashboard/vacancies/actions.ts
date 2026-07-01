@@ -5,10 +5,9 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { revalidateVacancyPages } from "@/lib/vacancy/revalidate";
 import { vacancyFormSchema } from "@/lib/vacancy/validators";
+import type { VacancyFormState } from "@/app/(app)/dashboard/vacancies/state";
 
 type Field = keyof typeof vacancyFormSchema.shape;
-export type VacancyFormState = { success: boolean; message: string; fieldErrors: Partial<Record<Field, string[]>> };
-export const initialVacancyFormState: VacancyFormState = { success: false, message: "", fieldErrors: {} };
 
 function parse(formData: FormData) {
   return vacancyFormSchema.safeParse({

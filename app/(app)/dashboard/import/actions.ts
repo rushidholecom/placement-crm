@@ -8,16 +8,6 @@ import { revalidateImportSurfaces } from "@/lib/import/revalidate";
 import { processImportAction } from "@/lib/import/engine";
 import type { ImportActionState } from "@/lib/import/types";
 
-export const initialImportActionState: ImportActionState = {
-  success: false,
-  message: "",
-  mode: "review",
-  review: null,
-  importedRows: 0,
-  skippedRows: 0,
-  summary: null
-};
-
 function readMode(formData: FormData) {
   const mode = formData.get("mode");
   return mode === "import" ? ("import" as const) : ("review" as const);

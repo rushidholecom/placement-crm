@@ -15,66 +15,11 @@ import {
 } from "@/lib/email/render";
 import { sendSmtpEmail } from "@/lib/email/smtp";
 import { DEFAULT_EMAIL_TEMPLATES } from "@/lib/email/constants";
-
-type EmailSettingsFieldName =
-  | "smtpHost"
-  | "smtpPort"
-  | "smtpSecure"
-  | "smtpUser"
-  | "smtpPassword"
-  | "fromName"
-  | "fromEmail"
-  | "replyTo"
-  | "signature";
-
-type EmailTemplateFieldName = "subject" | "body";
-
-type EmailSendFieldName =
-  | "templateKey"
-  | "companyId"
-  | "hrContactId"
-  | "recipientName"
-  | "recipientEmail"
-  | "cc"
-  | "bcc"
-  | "subject"
-  | "body";
-
-export type EmailSettingsFormState = {
-  success: boolean;
-  message: string;
-  fieldErrors: Partial<Record<EmailSettingsFieldName, string[]>>;
-};
-
-export type EmailTemplateFormState = {
-  success: boolean;
-  message: string;
-  fieldErrors: Partial<Record<EmailTemplateFieldName, string[]>>;
-};
-
-export type EmailSendFormState = {
-  success: boolean;
-  message: string;
-  fieldErrors: Partial<Record<EmailSendFieldName, string[]>>;
-};
-
-export const initialEmailSettingsFormState: EmailSettingsFormState = {
-  success: false,
-  message: "",
-  fieldErrors: {}
-};
-
-export const initialEmailTemplateFormState: EmailTemplateFormState = {
-  success: false,
-  message: "",
-  fieldErrors: {}
-};
-
-export const initialEmailSendFormState: EmailSendFormState = {
-  success: false,
-  message: "",
-  fieldErrors: {}
-};
+import {
+  type EmailSendFormState,
+  type EmailSettingsFormState,
+  type EmailTemplateFormState
+} from "@/app/(app)/dashboard/email/state";
 
 function normalizeSettingsFormData(formData: FormData) {
   return emailSettingsSchema.safeParse({

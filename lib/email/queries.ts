@@ -137,20 +137,18 @@ export async function getEmailPage() {
       })
     ]);
 
-  const settingsData = loadedSettings
-    ? {
-        key: loadedSettings.key,
-        smtpHost: loadedSettings.smtpHost,
-        smtpPort: loadedSettings.smtpPort,
-        smtpSecure: loadedSettings.smtpSecure,
-        smtpUser: loadedSettings.smtpUser ?? "",
-        smtpPassword: "",
-        fromName: loadedSettings.fromName,
-        fromEmail: loadedSettings.fromEmail,
-        replyTo: loadedSettings.replyTo ?? "",
-        signature: loadedSettings.signature ?? ""
-      }
-    : null;
+  const settingsData = {
+    key: loadedSettings?.key ?? "default",
+    smtpHost: loadedSettings?.smtpHost ?? DEFAULT_EMAIL_SETTINGS.smtpHost,
+    smtpPort: loadedSettings?.smtpPort ?? DEFAULT_EMAIL_SETTINGS.smtpPort,
+    smtpSecure: loadedSettings?.smtpSecure ?? DEFAULT_EMAIL_SETTINGS.smtpSecure,
+    smtpUser: loadedSettings?.smtpUser ?? DEFAULT_EMAIL_SETTINGS.smtpUser,
+    smtpPassword: "",
+    fromName: loadedSettings?.fromName ?? DEFAULT_EMAIL_SETTINGS.fromName,
+    fromEmail: loadedSettings?.fromEmail ?? DEFAULT_EMAIL_SETTINGS.fromEmail,
+    replyTo: loadedSettings?.replyTo ?? DEFAULT_EMAIL_SETTINGS.replyTo,
+    signature: loadedSettings?.signature ?? DEFAULT_EMAIL_SETTINGS.signature
+  };
 
   const stats = {
     totalTemplates: templates.length,
@@ -161,9 +159,9 @@ export async function getEmailPage() {
       emailStats.find((item) => item.status === EmailSendStatus.FAILED)?._count
         .status ?? 0,
     hasConfiguredSmtp:
-      Boolean(settingsData?.smtpHost) &&
-      Boolean(settingsData?.fromEmail) &&
-      Boolean(settingsData?.fromName)
+      Boolean(settingsData.smtpHost) &&
+      Boolean(settingsData.fromEmail) &&
+      Boolean(settingsData.fromName)
   };
 
   return {

@@ -3,7 +3,8 @@
 import { ChangeEvent, useActionState, useMemo, useState } from "react";
 import { FileSpreadsheet, LoaderCircle, Upload, Download, CheckCircle2, TriangleAlert } from "lucide-react";
 import * as XLSX from "xlsx";
-import { processImportFormAction, initialImportActionState } from "@/app/(app)/dashboard/import/actions";
+import { processImportFormAction } from "@/app/(app)/dashboard/import/actions";
+import { initialImportActionState } from "@/app/(app)/dashboard/import/state";
 import { FormField } from "@/components/form/form-field";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";

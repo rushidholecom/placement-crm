@@ -2,7 +2,8 @@
 
 import { useActionState, useEffect, useState } from "react";
 import { LoaderCircle, Mail, Send } from "lucide-react";
-import { initialEmailSendFormState, sendEmailAction } from "@/app/(app)/dashboard/email/actions";
+import { sendEmailAction } from "@/app/(app)/dashboard/email/actions";
+import { initialEmailSendFormState } from "@/app/(app)/dashboard/email/state";
 import { FormField } from "@/components/form/form-field";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

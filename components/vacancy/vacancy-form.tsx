@@ -6,7 +6,7 @@ import type { VacancyPriority, VacancyStatus } from "@prisma/client";
 import {
   initialVacancyFormState,
   type VacancyFormState
-} from "@/app/(app)/dashboard/vacancies/actions";
+} from "@/app/(app)/dashboard/vacancies/state";
 import { FormField } from "@/components/form/form-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

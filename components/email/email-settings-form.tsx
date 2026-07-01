@@ -2,10 +2,8 @@
 
 import { useActionState } from "react";
 import { LoaderCircle } from "lucide-react";
-import {
-  initialEmailSettingsFormState,
-  saveEmailSettingsAction
-} from "@/app/(app)/dashboard/email/actions";
+import { saveEmailSettingsAction } from "@/app/(app)/dashboard/email/actions";
+import { initialEmailSettingsFormState } from "@/app/(app)/dashboard/email/state";
 import { FormField } from "@/components/form/form-field";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
