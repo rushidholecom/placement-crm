@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { useEffect, usePathname, useState } from "react";
 import type { ReactNode } from "react";
 import { AppNavbar } from "@/components/layout/app-navbar";
 import { AppSidebar } from "@/components/layout/app-sidebar";
@@ -21,6 +21,22 @@ type AppShellProps = {
 
 export function AppShell({ children, user, reminders }: AppShellProps) {
   const pathname = usePathname();
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  useEffect(() => {
+    const savedValue = window.localStorage.getItem("placement-crm-sidebar-collapsed");
+
+    if (savedValue === "true") {
+      setSidebarCollapsed(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem(
+      "placement-crm-sidebar-collapsed",
+      sidebarCollapsed ? "true" : "false"
+    );
+  }, [sidebarCollapsed]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -31,7 +47,10 @@ export function AppShell({ children, user, reminders }: AppShellProps) {
         Skip to content
       </a>
       <div className="flex min-h-screen">
-        <AppSidebar />
+        <AppSidebar
+          collapsed={sidebarCollapsed}
+          onToggle={() => setSidebarCollapsed((current) => !current)}
+        />
         <div className="flex min-h-screen flex-1 flex-col bg-app-surface">
           <AppNavbar
             fullName={user.fullName}
@@ -39,6 +58,8 @@ export function AppShell({ children, user, reminders }: AppShellProps) {
             username={user.username}
             pageTitle={getPageTitle(pathname)}
             reminders={reminders}
+            sidebarCollapsed={sidebarCollapsed}
+            onToggleSidebar={() => setSidebarCollapsed((current) => !current)}
           />
           <div className="px-4 py-4 lg:px-8">
             <MobileNav />
