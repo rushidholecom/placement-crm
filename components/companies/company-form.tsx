@@ -11,10 +11,8 @@ import {
   formatCompanyStatus
 } from "@/lib/company/format";
 import type { CompanyFormInput } from "@/lib/company/validators";
-import type {
-  CompanyFormState
-} from "@/app/(app)/dashboard/companies/actions";
-import { initialCompanyFormState } from "@/app/(app)/dashboard/companies/actions";
+import type { CompanyFormState } from "@/app/(app)/dashboard/companies/state";
+import { initialCompanyFormState } from "@/app/(app)/dashboard/companies/state";
 import { FormField } from "@/components/form/form-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

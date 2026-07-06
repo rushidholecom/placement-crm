@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { companyFormSchema } from "@/lib/company/validators";
 import { revalidateCompanyPages } from "@/lib/company/revalidate";
-import { initialCompanyFormState, type CompanyFormState } from "@/app/(app)/dashboard/companies/state";
+import type { CompanyFormState } from "@/app/(app)/dashboard/companies/state";
 
 function normalizeCompanyFormData(formData: FormData) {
   return companyFormSchema.safeParse({

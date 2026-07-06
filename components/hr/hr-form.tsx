@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { LoaderCircle } from "lucide-react";
 import type { HrPriority, HrStatus } from "@prisma/client";
-import { initialHrFormState, type HrFormState } from "@/app/(app)/dashboard/hr/actions";
+import { initialHrFormState, type HrFormState } from "@/app/(app)/dashboard/hr/state";
 import { FormField } from "@/components/form/form-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
